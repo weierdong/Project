@@ -1,0 +1,84 @@
+package main
+
+import (
+	"fmt"
+	"github.com/dgrijalva/jwt-go"
+	"net/http"
+	"strconv"
+	"time"
+
+	"github.com/gorilla/sessions"
+)
+
+// 初始化一个cookie存储对象
+// something-very-secret应该是一个你自己的密匙，只要不被别人知道就行
+var store = sessions.NewCookieStore([]byte("something-very-secret"))
+
+/*
+func main() {
+	http.HandleFunc("/save", SaveSession)
+	http.HandleFunc("/get", GetSession)
+	err := http.ListenAndServe(":8081", nil)
+	if err != nil {
+		fmt.Println("HTTP server failed,err:", err)
+		return
+	}
+}*/
+
+func SaveSession(w http.ResponseWriter, r *http.Request) {
+	// Get a session. We're ignoring the error resulted from decoding an
+	// existing session: Get() always returns a session, even if empty.
+
+	//　获取一个session对象，session-name是session的名字
+	session, err := store.Get(r, "session-name")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 在session中存储值
+	session.Values["foo"] = "bar"
+	session.Values[42] = 43
+	// 保存更改
+	session.Save(r, w)
+}
+func GetSession(w http.ResponseWriter, r *http.Request) {
+	session, err := store.Get(r, "session-name")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	foo := session.Values["foo"]
+	fmt.Println(foo)
+}
+
+type MyClaims struct {
+	Username string `json:"username"`
+	jwt.StandardClaims
+}
+
+func main() {
+	var keyseed string
+	keyseed = strconv.Itoa(int(time.Now().Unix()))
+
+	key := []byte(keyseed)
+	c := MyClaims{
+		Username: "cjz",
+		StandardClaims: jwt.StandardClaims{
+			NotBefore: time.Now().Unix() - 60,
+			ExpiresAt: time.Now().Unix() + 60*60*2,
+			Issuer:    "chaijianzhe",
+		},
+	}
+
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+	s, err := t.SignedString(key)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(s)
+	token, err := jwt.ParseWithClaims(s, &MyClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return key, nil
+	})
+	fmt.Println(token.Claims.(*MyClaims).Username)
+}

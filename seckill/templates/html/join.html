@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>join</title>
+</head>
+<body>
+<form action="/join"method="post" novalidate autocomplete="off">
+<div>
+    <LABEL for="Name">Name:</LABEL>
+    <input type="Name" name="Name"id="Name">
+</div>
+<div>
+    <LABEL for="Id">Id:</LABEL>
+    <input type="Id" name="Id"id="Id">
+</div>
+<div>
+    <LABEL for="Email">Email:</LABEL>
+    <input type="Email" name="Email"id="Email">
+</div>
+<div>
+    <LABEL for="Tel">Tel:</LABEL>
+    <input type="Tel" name="Tel"id="Tel">
+</div>
+<div>
+    <LABEL for="Pass1">Pass1:</LABEL>
+    <input type="Pass1" name="Pass1"id="Pass1">
+</div>
+<div>
+    <LABEL for="Pass2">Pass2:</LABEL>
+    <input type="Pass2" name="Pass2"id="Pass2">
+</div>
+
+        {{.A}}+{{.B}}=?
+
+    <div>
+        <LABEL for="Verify_result">答案:</LABEL>
+        <input type="Verify_result" name="Verify_result"id="Verify_result">
+    </div>
+<div>
+    <input type="submit" value="注册">
+</div>
+</form>
+
+</body>
+</html>
